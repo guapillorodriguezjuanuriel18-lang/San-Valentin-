@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>San Valentín 💖</title>
+
+<style>
+body{
+    margin:0;
+    font-family:'Segoe UI', sans-serif;
+    background:#fdf1e7;
+    overflow:hidden;
+}
+
+/* PANTALLAS CON TRANSICION CORRECTA */
+.screen{
+    width:100vw;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    position:absolute;
+    opacity:0;
+    pointer-events:none; /* 🔑 evita bloquear clicks */
+    transition:opacity 1s ease;
+}
+
+.screen.active{
+    opacity:1;
+    pointer-events:auto; /* 🔑 solo la activa recibe clicks */
+}
+
+/* TEXTO */
+h1{
+    color:#c0392b;
+    font-size:3em;
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.buttons{
+    display:flex;
+    gap:30px;
+}
+
+button{
+    padding:15px 35px;
+    font-size:1.2em;
+    border:none;
+    border-radius:30px;
+    cursor:pointer;
+}
+
+#yes{ background:#e74c3c; color:white; }
+#no{ background:#95a5a6; color:white; position:relative; }
+
+.container{
+    display:flex;
+    gap:60px;
+    align-items:center;
+}
+
+/* TEXTO AMOR */
+.text{
+    max-width:400px;
+    color:#555;
+    font-size:1.1em;
+}
+
+#typedText{
+    min-height:120px;
+    white-space:pre-line;
+}
+
+/* CONTADOR */
+#counter{
+    margin-top:15px;
+    font-weight:bold;
+    color:#c0392b;
+}
+
+/* CORAZON GRANDE */
+.big-heart{
+    position:relative;
+    width:320px;
+    height:300px;
+    animation:beat 2s infinite;
+}
+
+@keyframes beat{
+    0%,100%{ transform:scale(1); }
+    50%{ transform:scale(1.08); }
+}
+
+.small-heart{
+    position:absolute;
+    width:14px;
+    height:14px;
+    background:#e74c3c;
+    transform:rotate(45deg);
+}
+
+.small-heart::before,
+.small-heart::after{
+    content:"";
+    position:absolute;
+    width:14px;
+    height:14px;
+    background:#e74c3c;
+    border-radius:50%;
+}
+
+.small-heart::before{ top:-7px; left:0; }
+.small-heart::after{ left:-7px; top:0; }
+
+/* LLUVIA */
+.falling-heart{
+    position:fixed;
+    top:-20px;
+    font-size:20px;
+    animation:fall linear infinite;
+}
+
+@keyframes fall{
+    to{
+        transform:translateY(110vh);
+        opacity:0;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- PANTALLA 1 -->
+<div class="screen active" id="askScreen">
+    <h1 id="question">HOLAA!! 💖<br>¿Quieres ser mi San Valentín?</h1>
+    <div class="buttons">
+        <button id="yes">Sí 💕</button>
+        <button id="no">No 😅</button>
+    </div>
+</div>
+
+<!-- PANTALLA 2 -->
+<div class="screen" id="loveScreen">
+    <div class="container">
+        <div class="text">
+            <h2>Para el amor de mi vida:</h2>
+            <p id="typedText"></p>
+            <div id="counter"></div>
+            <p><strong>— Te amo, Carla Ximena Lera Peralta 💖</strong></p>
+        </div>
+
+        <div class="big-heart" id="bigHeart"></div>
+    </div>
+</div>
+
+<script>
+const noBtn = document.getElementById("no");
+const yesBtn = document.getElementById("yes");
+const askScreen = document.getElementById("askScreen");
+const loveScreen = document.getElementById("loveScreen");
+const question = document.getElementById("question");
+
+/* BOTON NO */
+noBtn.addEventListener("mouseover", ()=>{
+    question.innerHTML = "Porfavorrr sii?? 🥺💘";
+    noBtn.style.transform =
+        `translate(${Math.random()*200-100}px, ${Math.random()*100-50}px)`;
+});
+
+/* BOTON SI */
+yesBtn.addEventListener("click", ()=>{
+    askScreen.classList.remove("active");
+
+    setTimeout(()=>{
+        askScreen.style.display="none";
+        loveScreen.style.display="flex";
+        setTimeout(()=>loveScreen.classList.add("active"),50);
+    },1000);
+
+    drawBigHeart();
+    startRain();
+    typeText();
+    startCounter();
+});
+
+/* TEXTO ESCRIBIENDOSE */
+const message =
+"Si pudiera elegir un lugar seguro,\n" +
+"sería a tu lado.\n\n" +
+"Cuanto más tiempo estoy contigo,\n" +
+"más te amo.";
+
+function typeText(){
+    const el = document.getElementById("typedText");
+    let i = 0;
+    el.textContent = "";
+    const interval = setInterval(()=>{
+        el.textContent += message[i];
+        i++;
+        if(i >= message.length) clearInterval(interval);
+    },40);
+}
+
+/* CONTADOR REAL */
+const startDate = new Date("2024-09-12T09:28:00");
+
+function startCounter(){
+    setInterval(()=>{
+        const now = new Date();
+        let diff = now - startDate;
+
+        const days = Math.floor(diff / (1000*60*60*24));
+        const hours = Math.floor((diff / (1000*60*60)) % 24);
+        const minutes = Math.floor((diff / (1000*60)) % 60);
+
+        document.getElementById("counter").textContent =
+            `Llevamos juntos ${days} días, ${hours} horas y ${minutes} minutos ❤️`;
+    },1000);
+}
+
+/* CORAZON PERFECTO */
+function drawBigHeart(){
+    const container = document.getElementById("bigHeart");
+    const scale = 10;
+
+    for(let t = 0; t < Math.PI * 2; t += 0.04){
+        let x = 16 * Math.pow(Math.sin(t), 3);
+        let y = -(13 * Math.cos(t)
+                 - 5 * Math.cos(2 * t)
+                 - 2 * Math.cos(3 * t)
+                 - Math.cos(4 * t));
+
+        const heart = document.createElement("div");
+        heart.className = "small-heart";
+        heart.style.left = (160 + x * scale) + "px";
+        heart.style.top  = (140 + y * scale) + "px";
+        container.appendChild(heart);
+    }
+}
+
+/* LLUVIA */
+function startRain(){
+    setInterval(()=>{
+        const h = document.createElement("div");
+        h.className = "falling-heart";
+        h.innerHTML = "❤️";
+        h.style.left = Math.random()*100 + "vw";
+        h.style.animationDuration = 3 + Math.random()*3 + "s";
+        document.body.appendChild(h);
+        setTimeout(()=>h.remove(),6000);
+    },300);
+}
+</script>
+
+</body>
+</html>
